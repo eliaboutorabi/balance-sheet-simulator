@@ -35,7 +35,7 @@ const startingData = {
   ],
   equity: [
     { id: 'capital', label: 'Contributed capital', amount: 50000 },
-    { id: 'retained', label: 'Retained earnings', amount: 31750 },
+    { id: 'retained', label: 'Retained earnings', amount: 21800 },
   ],
 };
 
