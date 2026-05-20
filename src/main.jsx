@@ -1,24 +1,34 @@
 import React, { useMemo, useState } from 'react';
 import { createRoot } from 'react-dom/client';
+import { driver } from 'driver.js';
 import {
   Activity,
+  ArrowRight,
   BadgeDollarSign,
   BarChart3,
+  BookOpen,
+  Brain,
   CircleCheck,
   CircleDollarSign,
+  Compass,
   Download,
+  GraduationCap,
   Landmark,
+  Layers,
   LineChart,
   LockKeyhole,
   Minus,
   PiggyBank,
   Plus,
+  ReceiptText,
   RefreshCcw,
   Scale,
   Sparkles,
+  Target,
   TrendingUp,
   WalletCards,
 } from 'lucide-react';
+import 'driver.js/dist/driver.css';
 import './styles.css';
 
 const startingData = {
@@ -92,20 +102,68 @@ const sectionMeta = {
     icon: WalletCards,
     addLabel: 'Add asset',
     accent: 'green',
+    lesson: 'Assets are resources the organization controls. They are the things the business can use, sell, collect, or convert into cash.',
+    examples: ['Cash', 'Receivables', 'Inventory', 'Equipment'],
   },
   liabilities: {
     title: 'Liabilities',
     icon: Landmark,
     addLabel: 'Add liability',
     accent: 'rose',
+    lesson: 'Liabilities are obligations. They represent money, goods, or services the organization still owes to lenders, suppliers, employees, or tax authorities.',
+    examples: ['Payables', 'Loans', 'Accrued expenses'],
   },
   equity: {
     title: 'Equity',
     icon: PiggyBank,
     addLabel: 'Add equity',
     accent: 'blue',
+    lesson: 'Equity is the owner claim after liabilities are subtracted from assets. It includes invested capital and accumulated profits kept in the business.',
+    examples: ['Owner capital', 'Common stock', 'Retained earnings'],
   },
 };
+
+const lessons = [
+  {
+    key: 'snapshot',
+    icon: BookOpen,
+    title: 'A balance sheet is a snapshot',
+    body: 'It shows what an organization owns, what it owes, and what is left for owners at one point in time. Unlike an income statement, it is not about activity over a period.',
+    takeaway: 'Think: financial position today.',
+  },
+  {
+    key: 'equation',
+    icon: Scale,
+    title: 'The equation must always hold',
+    body: 'Every asset has to be funded somehow. Funding comes from either outside parties, called liabilities, or owners, called equity.',
+    takeaway: 'Assets = Liabilities + Equity.',
+  },
+  {
+    key: 'double-entry',
+    icon: ReceiptText,
+    title: 'Every transaction touches two places',
+    body: 'If the company borrows cash, assets rise and liabilities rise. If it uses cash to buy equipment, one asset goes down while another asset goes up.',
+    takeaway: 'Balanced transactions have two sides.',
+  },
+];
+
+const exercises = [
+  {
+    title: 'Healthy starting point',
+    description: 'Load a clean balance sheet and notice how total assets equal the claims against those assets.',
+    action: 'balanced',
+  },
+  {
+    title: 'Debt-funded expansion',
+    description: 'A company buys more equipment using debt. Assets grow, but the debt ratio climbs too.',
+    action: 'leveraged',
+  },
+  {
+    title: 'Find the missing entry',
+    description: 'This case is intentionally out of balance. Use the variance to decide which side needs attention.',
+    action: 'mismatch',
+  },
+];
 
 function cloneData(data) {
   return Object.fromEntries(
@@ -134,6 +192,7 @@ function App() {
   const [sheet, setSheet] = useState(() => cloneData(startingData));
   const [tolerance, setTolerance] = useState(0);
   const [activeScenario, setActiveScenario] = useState('balanced');
+  const [activeLesson, setActiveLesson] = useState('snapshot');
 
   const metrics = useMemo(() => {
     const assets = total(sheet.assets);
@@ -194,25 +253,174 @@ function App() {
     URL.revokeObjectURL(url);
   }
 
+  function startTour() {
+    const tour = driver({
+      showProgress: true,
+      animate: true,
+      nextBtnText: 'Next',
+      prevBtnText: 'Back',
+      doneBtnText: 'Finish',
+      popoverClass: 'tour-popover',
+      steps: [
+        {
+          element: '[data-tour="hero"]',
+          popover: {
+            title: 'Start with the big idea',
+            description: 'A balance sheet is a snapshot of what a business owns, owes, and has left for owners.',
+            side: 'bottom',
+            align: 'start',
+          },
+        },
+        {
+          element: '[data-tour="lessons"]',
+          popover: {
+            title: 'Learn before calculating',
+            description: 'Use these short lessons to understand the purpose of each part of the sheet before editing numbers.',
+            side: 'bottom',
+          },
+        },
+        {
+          element: '[data-tour="scenarios"]',
+          popover: {
+            title: 'Try guided scenarios',
+            description: 'Switch between examples to see how financing choices and missing entries change the balance.',
+            side: 'bottom',
+          },
+        },
+        {
+          element: '[data-tour="metrics"]',
+          popover: {
+            title: 'Read the quick signals',
+            description: 'These totals and ratios translate the ledger into fast financial clues, like working capital and debt funding.',
+            side: 'bottom',
+          },
+        },
+        {
+          element: '[data-tour="ledger"]',
+          popover: {
+            title: 'Edit the ledger',
+            description: 'Change labels, adjust amounts, add lines, or remove lines. The whole page updates immediately.',
+            side: 'right',
+          },
+        },
+        {
+          element: '[data-tour="analysis"]',
+          popover: {
+            title: 'Check the equation',
+            description: 'This panel tells you whether Assets equal Liabilities plus Equity and how far off the sheet is.',
+            side: 'left',
+          },
+        },
+      ],
+    });
+
+    tour.drive();
+  }
+
   return (
     <main className="app-shell">
-      <section className="hero">
+      <section className="hero" data-tour="hero">
         <div className="hero-copy">
           <div className="eyebrow">
             <Sparkles size={16} />
-            Live financial modeling studio
+            Interactive accounting classroom
           </div>
           <h1>Balance Sheet Simulator</h1>
           <p>
-            Enter assets, liabilities, and equity to test the accounting equation in real time,
-            explore scenarios, and spot gaps before they become reporting headaches.
+            Learn what a balance sheet means, then edit the numbers to see the accounting
+            equation react in real time.
           </p>
+          <div className="hero-actions">
+            <button className="primary cta" type="button" onClick={startTour}>
+              <Compass size={18} />
+              Start guided tour
+            </button>
+            <a href="#learn" className="text-link">
+              <GraduationCap size={18} />
+              Learn the basics
+            </a>
+          </div>
         </div>
         <div className={`balance-orb ${metrics.balanced ? 'is-balanced' : 'is-off'}`}>
           <Scale size={42} />
           <span>{metrics.balanced ? 'Balanced' : 'Out of balance'}</span>
           <strong>{currency(Math.abs(metrics.variance))}</strong>
           <small>{metrics.balanced ? 'Within tolerance' : metrics.variance > 0 ? 'Assets exceed funding' : 'Funding exceeds assets'}</small>
+        </div>
+      </section>
+
+      <section className="learning-lab" id="learn" data-tour="lessons">
+        <div className="learning-copy">
+          <span className="section-kicker">
+            <Brain size={16} />
+            Balance sheet fundamentals
+          </span>
+          <h2>First learn the story, then change the numbers.</h2>
+          <p>
+            A balance sheet is less mysterious when you treat it as a funding map:
+            every resource on the left is paid for by creditors or owners on the right.
+          </p>
+        </div>
+
+        <div className="lesson-tabs" aria-label="Balance sheet lessons">
+          {lessons.map((lesson) => {
+            const Icon = lesson.icon;
+            return (
+              <button
+                className={activeLesson === lesson.key ? 'active' : ''}
+                key={lesson.key}
+                onClick={() => setActiveLesson(lesson.key)}
+                type="button"
+              >
+                <Icon size={18} />
+                {lesson.title}
+              </button>
+            );
+          })}
+        </div>
+
+        <LessonCard lesson={lessons.find((lesson) => lesson.key === activeLesson)} />
+
+        <div className="concept-grid">
+          {Object.entries(sectionMeta).map(([key, meta]) => {
+            const Icon = meta.icon;
+            return (
+              <article className={`concept-card ${meta.accent}`} key={key}>
+                <Icon size={24} />
+                <h3>{meta.title}</h3>
+                <p>{meta.lesson}</p>
+                <div className="chip-row">
+                  {meta.examples.map((example) => (
+                    <span key={example}>{example}</span>
+                  ))}
+                </div>
+              </article>
+            );
+          })}
+        </div>
+      </section>
+
+      <section className="exercise-strip" data-tour="scenarios">
+        <div>
+          <span className="section-kicker">
+            <Target size={16} />
+            Guided practice
+          </span>
+          <h2>Try a scenario and explain what changed.</h2>
+        </div>
+        <div className="exercise-grid">
+          {exercises.map((exercise) => (
+            <button
+              className={activeScenario === exercise.action ? 'exercise-card active' : 'exercise-card'}
+              key={exercise.title}
+              onClick={() => loadScenario(exercise.action)}
+              type="button"
+            >
+              <span>{exercise.title}</span>
+              <p>{exercise.description}</p>
+              <ArrowRight size={18} />
+            </button>
+          ))}
         </div>
       </section>
 
@@ -245,6 +453,10 @@ function App() {
             <RefreshCcw size={17} />
             Reset
           </button>
+          <button type="button" onClick={startTour}>
+            <Compass size={17} />
+            Tour
+          </button>
           <button type="button" className="primary" onClick={exportJson}>
             <Download size={17} />
             Export
@@ -252,7 +464,7 @@ function App() {
         </div>
       </section>
 
-      <section className="dashboard">
+      <section className="dashboard" data-tour="metrics">
         <Metric icon={CircleDollarSign} label="Total assets" value={currency(metrics.assets)} />
         <Metric icon={BadgeDollarSign} label="Liabilities + equity" value={currency(metrics.funding)} />
         <Metric icon={Activity} label="Working capital" value={currency(metrics.workingCapital)} />
@@ -260,7 +472,7 @@ function App() {
       </section>
 
       <section className="workspace">
-        <div className="ledger-grid">
+        <div className="ledger-grid" data-tour="ledger">
           {Object.keys(sectionMeta).map((section) => (
             <LedgerSection
               key={section}
@@ -275,7 +487,7 @@ function App() {
           ))}
         </div>
 
-        <aside className="analysis-panel">
+        <aside className="analysis-panel" data-tour="analysis">
           <div className="panel-heading">
             <BarChart3 size={22} />
             <div>
@@ -312,9 +524,32 @@ function App() {
             <Ratio label="Debt funded" value={metrics.debtRatio} />
             <Ratio label="Equity funded" value={metrics.equityRatio} />
           </div>
+
+          <div className="coach-note">
+            <Layers size={20} />
+            <p>
+              When the sheet does not balance, look for a missing second side of a transaction.
+              For example, borrowing cash adds both cash and debt.
+            </p>
+          </div>
         </aside>
       </section>
     </main>
+  );
+}
+
+function LessonCard({ lesson }) {
+  const Icon = lesson.icon;
+
+  return (
+    <article className="lesson-card">
+      <Icon size={26} />
+      <div>
+        <h3>{lesson.title}</h3>
+        <p>{lesson.body}</p>
+      </div>
+      <strong>{lesson.takeaway}</strong>
+    </article>
   );
 }
 
