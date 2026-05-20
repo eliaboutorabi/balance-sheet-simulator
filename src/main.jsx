@@ -12,6 +12,7 @@ import {
   CircleDollarSign,
   Compass,
   Download,
+  Github,
   GraduationCap,
   Landmark,
   Layers,
@@ -339,7 +340,17 @@ function App() {
               <GraduationCap size={18} />
               Learn the basics
             </a>
+            <a
+              href="https://github.com/eliaboutorabi/balance-sheet-simulator"
+              className="text-link"
+              target="_blank"
+              rel="noreferrer"
+            >
+              <Github size={18} />
+              GitHub
+            </a>
           </div>
+          <p className="builder-credit">Built by Elham Aboutorabi.</p>
         </div>
         <div className={`balance-orb ${metrics.balanced ? 'is-balanced' : 'is-off'}`}>
           <Scale size={42} />
