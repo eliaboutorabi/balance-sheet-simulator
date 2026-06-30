@@ -175,6 +175,7 @@ const currencyOptions = [
   { code: 'JPY', label: 'Japanese Yen', locale: 'ja-JP' },
   { code: 'INR', label: 'Indian Rupee', locale: 'en-IN' },
   { code: 'AED', label: 'UAE Dirham', locale: 'en-AE' },
+  { code: 'IRR', label: 'Iranian Rial', locale: 'fa-IR' },
 ];
 
 function cloneData(data) {
