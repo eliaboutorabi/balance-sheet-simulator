@@ -212,13 +212,17 @@ h1 {
 .dashboard,
 .workspace,
 .learning-lab,
-.exercise-strip {
+.exercise-strip,
+.report-setup,
+.report-preview {
   margin: 0 auto 20px;
   max-width: 1440px;
 }
 
 .learning-lab,
-.exercise-strip {
+.exercise-strip,
+.report-setup,
+.report-preview {
   backdrop-filter: blur(20px);
   background: rgba(255, 255, 255, 0.74);
   border: 1px solid rgba(23, 33, 29, 0.08);
@@ -417,6 +421,55 @@ h1 {
 .exercise-card.active p,
 .exercise-card.active svg {
   color: rgba(255, 255, 255, 0.78);
+}
+
+.report-setup {
+  align-items: center;
+  display: grid;
+  gap: 18px;
+  grid-template-columns: minmax(260px, 0.55fr) minmax(0, 1fr);
+}
+
+.report-setup h2 {
+  color: #111815;
+  font-size: clamp(1.35rem, 2.4vw, 2rem);
+  line-height: 1.12;
+  margin-top: 8px;
+}
+
+.report-fields {
+  display: grid;
+  gap: 12px;
+  grid-template-columns: minmax(0, 1.2fr) minmax(180px, 0.8fr);
+}
+
+.report-fields label {
+  align-items: center;
+  background: #fbfaf6;
+  border: 1px solid rgba(23, 33, 29, 0.08);
+  border-radius: 16px;
+  color: #41554c;
+  display: grid;
+  font-weight: 900;
+  gap: 8px;
+  grid-template-columns: auto auto minmax(0, 1fr);
+  min-height: 58px;
+  padding: 10px 12px;
+}
+
+.report-fields svg {
+  color: #39745d;
+}
+
+.report-fields input {
+  background: #fff;
+  border: 1px solid rgba(23, 33, 29, 0.08);
+  border-radius: 12px;
+  color: #17211d;
+  font-weight: 800;
+  min-height: 40px;
+  min-width: 0;
+  padding: 0 12px;
 }
 
 .command-bar {
@@ -779,6 +832,138 @@ h1 {
   flex: 0 0 auto;
 }
 
+.report-preview {
+  padding: 22px;
+}
+
+.report-paper {
+  background: #fff;
+  border: 1px solid #ddd8cd;
+  border-radius: 18px;
+  box-shadow: 0 18px 46px rgba(42, 50, 44, 0.08);
+  padding: clamp(22px, 4vw, 42px);
+}
+
+.report-header {
+  align-items: flex-start;
+  border-bottom: 3px solid #17211d;
+  display: flex;
+  gap: 24px;
+  justify-content: space-between;
+  padding-bottom: 22px;
+}
+
+.report-header span {
+  color: #39745d;
+  font-size: 0.78rem;
+  font-weight: 950;
+  text-transform: uppercase;
+}
+
+.report-header h2 {
+  color: #111815;
+  font-size: clamp(2rem, 5vw, 3.8rem);
+  line-height: 1;
+  margin-top: 8px;
+}
+
+.report-header p {
+  color: #62726b;
+  font-weight: 800;
+  margin-top: 10px;
+}
+
+.report-status {
+  border-radius: 999px;
+  color: #fff;
+  flex: 0 0 auto;
+  padding: 10px 14px;
+}
+
+.report-status.balanced {
+  background: #2d7b59;
+}
+
+.report-status.warning {
+  background: #a34950;
+}
+
+.report-summary {
+  display: grid;
+  gap: 14px;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  margin: 26px 0;
+}
+
+.report-summary div {
+  background: #f6f3ed;
+  border-radius: 16px;
+  padding: 16px;
+}
+
+.report-summary span {
+  color: #66746e;
+  display: block;
+  font-size: 0.78rem;
+  font-weight: 900;
+  text-transform: uppercase;
+}
+
+.report-summary strong {
+  color: #17211d;
+  display: block;
+  font-size: clamp(1.25rem, 2.5vw, 1.8rem);
+  margin-top: 8px;
+}
+
+.report-columns {
+  display: grid;
+  gap: 22px;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.report-columns h3 {
+  font-size: 1.1rem;
+  margin-bottom: 10px;
+}
+
+.report-columns table {
+  border-collapse: collapse;
+  width: 100%;
+}
+
+.report-columns td {
+  border-bottom: 1px solid #e8e3d9;
+  color: #40534b;
+  padding: 10px 0;
+  vertical-align: top;
+}
+
+.report-columns td:last-child {
+  color: #17211d;
+  font-weight: 900;
+  padding-left: 12px;
+  text-align: right;
+  white-space: nowrap;
+}
+
+.report-columns .total-row td {
+  border-bottom: 2px solid #17211d;
+  border-top: 2px solid #17211d;
+  color: #17211d;
+  font-weight: 950;
+}
+
+.report-equation {
+  background: #17211d;
+  border-radius: 16px;
+  color: #fff;
+  font-weight: 900;
+  margin-top: 28px;
+  padding: 18px;
+  text-align: center;
+}
+
 .driver-popover.tour-popover {
   border-radius: 18px;
   color: #17211d;
@@ -807,7 +992,8 @@ h1 {
   .hero,
   .workspace,
   .learning-lab,
-  .exercise-strip {
+  .exercise-strip,
+  .report-setup {
     grid-template-columns: 1fr;
   }
 
@@ -822,7 +1008,10 @@ h1 {
   }
 
   .concept-grid,
-  .exercise-grid {
+  .exercise-grid,
+  .report-fields,
+  .report-summary,
+  .report-columns {
     grid-template-columns: 1fr;
   }
 
@@ -841,7 +1030,9 @@ h1 {
   .ledger-card,
   .analysis-panel,
   .learning-lab,
-  .exercise-strip {
+  .exercise-strip,
+  .report-setup,
+  .report-preview {
     border-radius: 18px;
   }
 
@@ -889,5 +1080,54 @@ h1 {
 
   .operator {
     display: none;
+  }
+}
+
+@media print {
+  @page {
+    margin: 0.45in;
+  }
+
+  body {
+    background: #fff;
+  }
+
+  .app-shell {
+    min-height: auto;
+    overflow: visible;
+    padding: 0;
+  }
+
+  .app-shell::before,
+  .app-shell::after,
+  .hero,
+  .learning-lab,
+  .exercise-strip,
+  .report-setup,
+  .command-bar,
+  .dashboard,
+  .workspace {
+    display: none !important;
+  }
+
+  .report-preview {
+    background: #fff;
+    border: 0;
+    box-shadow: none;
+    display: block;
+    margin: 0;
+    max-width: none;
+    padding: 0;
+  }
+
+  .report-paper {
+    border: 0;
+    border-radius: 0;
+    box-shadow: none;
+    padding: 0;
+  }
+
+  .report-columns {
+    grid-template-columns: repeat(3, 1fr);
   }
 }

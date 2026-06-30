@@ -8,10 +8,13 @@ import {
   BarChart3,
   BookOpen,
   Brain,
+  Building2,
+  CalendarDays,
   CircleCheck,
   CircleDollarSign,
   Compass,
   Download,
+  FileText,
   Github,
   GraduationCap,
   Landmark,
@@ -21,6 +24,7 @@ import {
   Minus,
   PiggyBank,
   Plus,
+  Printer,
   ReceiptText,
   RefreshCcw,
   Scale,
@@ -178,6 +182,10 @@ const currencyOptions = [
   { code: 'IRR', label: 'Iranian Rial', locale: 'fa-IR' },
 ];
 
+function todayISO() {
+  return new Date().toISOString().slice(0, 10);
+}
+
 function cloneData(data) {
   return Object.fromEntries(
     Object.entries(data).map(([key, rows]) => [key, rows.map((row) => ({ ...row }))]),
@@ -212,6 +220,25 @@ function currency(value, selectedCurrency) {
   }).format(value);
 }
 
+function displayDate(value) {
+  if (!value) return 'Not dated';
+
+  return new Intl.DateTimeFormat('en-US', {
+    month: 'long',
+    day: 'numeric',
+    year: 'numeric',
+  }).format(new Date(`${value}T00:00:00`));
+}
+
+function escapeHtml(value) {
+  return String(value)
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#039;');
+}
+
 function percent(value) {
   if (!Number.isFinite(value)) return '0%';
   return `${Math.round(value * 100)}%`;
@@ -223,6 +250,8 @@ function App() {
   const [activeScenario, setActiveScenario] = useState('balanced');
   const [activeLesson, setActiveLesson] = useState('snapshot');
   const [selectedCurrency, setSelectedCurrency] = useState('USD');
+  const [companyName, setCompanyName] = useState('Example Company');
+  const [reportDate, setReportDate] = useState(todayISO);
 
   const metrics = useMemo(() => {
     const assets = total(sheet.assets);
@@ -272,19 +301,26 @@ function App() {
     setActiveScenario(key);
   }
 
-  function exportJson() {
-    const payload = JSON.stringify(
-      { currency: selectedCurrency, sheet, metrics, exportedAt: new Date().toISOString() },
-      null,
-      2,
-    );
-    const blob = new Blob([payload], { type: 'application/json' });
+  function exportReport() {
+    const reportHtml = buildReportHtml({
+      companyName,
+      reportDate,
+      sheet,
+      metrics,
+      selectedCurrency,
+    });
+    const safeCompanyName = companyName.trim().replace(/[^a-z0-9]+/gi, '-').replace(/^-|-$/g, '') || 'balance-sheet';
+    const blob = new Blob([reportHtml], { type: 'text/html' });
     const url = URL.createObjectURL(blob);
     const link = document.createElement('a');
     link.href = url;
-    link.download = 'balance-sheet-simulation.json';
+    link.download = `${safeCompanyName}-balance-sheet-${reportDate || 'undated'}.html`;
     link.click();
     URL.revokeObjectURL(url);
+  }
+
+  function printReport() {
+    window.print();
   }
 
   function startTour() {
@@ -318,6 +354,14 @@ function App() {
           popover: {
             title: 'Try guided scenarios',
             description: 'Switch between examples to see how financing choices and missing entries change the balance.',
+            side: 'bottom',
+          },
+        },
+        {
+          element: '[data-tour="report-setup"]',
+          popover: {
+            title: 'Name the report',
+            description: 'Add the company name and balance sheet date before exporting or printing.',
             side: 'bottom',
           },
         },
@@ -476,6 +520,38 @@ function App() {
         </div>
       </section>
 
+      <section className="report-setup" data-tour="report-setup">
+        <div>
+          <span className="section-kicker">
+            <FileText size={16} />
+            Report details
+          </span>
+          <h2>Prepare a clean balance sheet report.</h2>
+        </div>
+        <div className="report-fields">
+          <label>
+            <Building2 size={17} />
+            Company
+            <input
+              aria-label="Company name"
+              value={companyName}
+              onChange={(event) => setCompanyName(event.target.value)}
+              placeholder="Company name"
+            />
+          </label>
+          <label>
+            <CalendarDays size={17} />
+            Date
+            <input
+              aria-label="Balance sheet date"
+              type="date"
+              value={reportDate}
+              onChange={(event) => setReportDate(event.target.value)}
+            />
+          </label>
+        </div>
+      </section>
+
       <section className="command-bar">
         <div className="scenario-tabs" aria-label="Scenario presets">
           {Object.entries(scenarios).map(([key, scenario]) => (
@@ -523,9 +599,13 @@ function App() {
             <Compass size={17} />
             Tour
           </button>
-          <button type="button" className="primary" onClick={exportJson}>
+          <button type="button" onClick={printReport}>
+            <Printer size={17} />
+            Print
+          </button>
+          <button type="button" className="primary" onClick={exportReport}>
             <Download size={17} />
-            Export
+            Export report
           </button>
         </div>
       </section>
@@ -601,7 +681,152 @@ function App() {
           </div>
         </aside>
       </section>
+
+      <ReportPreview
+        companyName={companyName}
+        reportDate={reportDate}
+        sheet={sheet}
+        metrics={metrics}
+        selectedCurrency={selectedCurrency}
+      />
     </main>
+  );
+}
+
+function buildReportHtml({ companyName, reportDate, sheet, metrics, selectedCurrency }) {
+  const renderRows = (rows) =>
+    rows
+      .map(
+        (row) => `
+          <tr>
+            <td>${escapeHtml(row.label)}</td>
+            <td>${escapeHtml(currency(row.amount, selectedCurrency))}</td>
+          </tr>
+        `,
+      )
+      .join('');
+
+  return `<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>${escapeHtml(companyName || 'Balance Sheet')} - Balance Sheet</title>
+    <style>
+      body { background: #f6f3ed; color: #17211d; font-family: Inter, Arial, sans-serif; margin: 0; padding: 40px; }
+      .report { background: #fff; border: 1px solid #ddd8cd; box-shadow: 0 24px 70px rgba(42, 50, 44, 0.12); margin: 0 auto; max-width: 900px; padding: 44px; }
+      .header { border-bottom: 3px solid #17211d; display: flex; justify-content: space-between; gap: 24px; padding-bottom: 24px; }
+      .kicker { color: #39745d; font-size: 12px; font-weight: 800; letter-spacing: 0.08em; text-transform: uppercase; }
+      h1 { font-size: 36px; line-height: 1; margin: 8px 0; }
+      .date { color: #5f6f68; font-weight: 700; }
+      .status { align-self: start; border-radius: 999px; color: #fff; font-weight: 800; padding: 10px 14px; }
+      .status.ok { background: #2d7b59; }
+      .status.warn { background: #a34950; }
+      .summary { display: grid; gap: 14px; grid-template-columns: repeat(3, 1fr); margin: 28px 0; }
+      .summary div { background: #f6f3ed; border-radius: 14px; padding: 16px; }
+      .summary span { color: #66746e; display: block; font-size: 12px; font-weight: 800; text-transform: uppercase; }
+      .summary strong { display: block; font-size: 22px; margin-top: 8px; }
+      .grid { display: grid; gap: 22px; grid-template-columns: repeat(3, 1fr); }
+      h2 { font-size: 18px; margin: 0 0 12px; }
+      table { border-collapse: collapse; width: 100%; }
+      td { border-bottom: 1px solid #e8e3d9; padding: 10px 0; }
+      td:last-child { font-weight: 800; text-align: right; white-space: nowrap; }
+      .total td { border-bottom: 2px solid #17211d; border-top: 2px solid #17211d; font-weight: 900; }
+      .equation { background: #17211d; border-radius: 16px; color: #fff; margin-top: 28px; padding: 18px; text-align: center; }
+      .footer { color: #6a786f; font-size: 12px; margin-top: 28px; }
+      @media print { body { background: #fff; padding: 0; } .report { border: 0; box-shadow: none; } }
+    </style>
+  </head>
+  <body>
+    <main class="report">
+      <section class="header">
+        <div>
+          <div class="kicker">Balance Sheet</div>
+          <h1>${escapeHtml(companyName || 'Unnamed Company')}</h1>
+          <div class="date">As of ${escapeHtml(displayDate(reportDate))}</div>
+        </div>
+        <div class="status ${metrics.balanced ? 'ok' : 'warn'}">${metrics.balanced ? 'Balanced' : 'Needs review'}</div>
+      </section>
+      <section class="summary">
+        <div><span>Total assets</span><strong>${escapeHtml(currency(metrics.assets, selectedCurrency))}</strong></div>
+        <div><span>Liabilities + equity</span><strong>${escapeHtml(currency(metrics.funding, selectedCurrency))}</strong></div>
+        <div><span>Variance</span><strong>${escapeHtml(currency(Math.abs(metrics.variance), selectedCurrency))}</strong></div>
+      </section>
+      <section class="grid">
+        <div><h2>Assets</h2><table>${renderRows(sheet.assets)}<tr class="total"><td>Total assets</td><td>${escapeHtml(currency(metrics.assets, selectedCurrency))}</td></tr></table></div>
+        <div><h2>Liabilities</h2><table>${renderRows(sheet.liabilities)}<tr class="total"><td>Total liabilities</td><td>${escapeHtml(currency(metrics.liabilities, selectedCurrency))}</td></tr></table></div>
+        <div><h2>Equity</h2><table>${renderRows(sheet.equity)}<tr class="total"><td>Total equity</td><td>${escapeHtml(currency(metrics.equity, selectedCurrency))}</td></tr></table></div>
+      </section>
+      <section class="equation">Assets ${escapeHtml(currency(metrics.assets, selectedCurrency))} = Liabilities + Equity ${escapeHtml(currency(metrics.funding, selectedCurrency))}</section>
+      <p class="footer">Generated by Balance Sheet Simulator. Built by Elham Aboutorabi.</p>
+    </main>
+  </body>
+</html>`;
+}
+
+function ReportPreview({ companyName, reportDate, sheet, metrics, selectedCurrency }) {
+  return (
+    <section className="report-preview print-report">
+      <div className="report-paper">
+        <header className="report-header">
+          <div>
+            <span>Balance Sheet</span>
+            <h2>{companyName || 'Unnamed Company'}</h2>
+            <p>As of {displayDate(reportDate)}</p>
+          </div>
+          <strong className={metrics.balanced ? 'report-status balanced' : 'report-status warning'}>
+            {metrics.balanced ? 'Balanced' : 'Needs review'}
+          </strong>
+        </header>
+
+        <div className="report-summary">
+          <ReportStat label="Total assets" value={currency(metrics.assets, selectedCurrency)} />
+          <ReportStat label="Liabilities + equity" value={currency(metrics.funding, selectedCurrency)} />
+          <ReportStat label="Variance" value={currency(Math.abs(metrics.variance), selectedCurrency)} />
+        </div>
+
+        <div className="report-columns">
+          <ReportTable title="Assets" rows={sheet.assets} totalLabel="Total assets" totalValue={metrics.assets} selectedCurrency={selectedCurrency} />
+          <ReportTable title="Liabilities" rows={sheet.liabilities} totalLabel="Total liabilities" totalValue={metrics.liabilities} selectedCurrency={selectedCurrency} />
+          <ReportTable title="Equity" rows={sheet.equity} totalLabel="Total equity" totalValue={metrics.equity} selectedCurrency={selectedCurrency} />
+        </div>
+
+        <div className="report-equation">
+          Assets {currency(metrics.assets, selectedCurrency)} = Liabilities + Equity {currency(metrics.funding, selectedCurrency)}
+        </div>
+      </div>
+    </section>
+  );
+}
+
+function ReportStat({ label, value }) {
+  return (
+    <div>
+      <span>{label}</span>
+      <strong>{value}</strong>
+    </div>
+  );
+}
+
+function ReportTable({ title, rows, totalLabel, totalValue, selectedCurrency }) {
+  return (
+    <article>
+      <h3>{title}</h3>
+      <table>
+        <tbody>
+          {rows.map((row) => (
+            <tr key={row.id}>
+              <td>{row.label}</td>
+              <td>{currency(row.amount, selectedCurrency)}</td>
+            </tr>
+          ))}
+          <tr className="total-row">
+            <td>{totalLabel}</td>
+            <td>{currency(totalValue, selectedCurrency)}</td>
+          </tr>
+        </tbody>
+      </table>
+    </article>
   );
 }
 
