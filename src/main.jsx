@@ -166,6 +166,17 @@ const exercises = [
   },
 ];
 
+const currencyOptions = [
+  { code: 'USD', label: 'US Dollar', locale: 'en-US' },
+  { code: 'EUR', label: 'Euro', locale: 'de-DE' },
+  { code: 'GBP', label: 'British Pound', locale: 'en-GB' },
+  { code: 'CAD', label: 'Canadian Dollar', locale: 'en-CA' },
+  { code: 'AUD', label: 'Australian Dollar', locale: 'en-AU' },
+  { code: 'JPY', label: 'Japanese Yen', locale: 'ja-JP' },
+  { code: 'INR', label: 'Indian Rupee', locale: 'en-IN' },
+  { code: 'AED', label: 'UAE Dirham', locale: 'en-AE' },
+];
+
 function cloneData(data) {
   return Object.fromEntries(
     Object.entries(data).map(([key, rows]) => [key, rows.map((row) => ({ ...row }))]),
@@ -176,10 +187,12 @@ function total(rows) {
   return rows.reduce((sum, row) => sum + Number(row.amount || 0), 0);
 }
 
-function currency(value) {
-  return new Intl.NumberFormat('en-US', {
+function currency(value, selectedCurrency) {
+  const option = currencyOptions.find(({ code }) => code === selectedCurrency) ?? currencyOptions[0];
+
+  return new Intl.NumberFormat(option.locale, {
     style: 'currency',
-    currency: 'USD',
+    currency: option.code,
     maximumFractionDigits: 0,
   }).format(value);
 }
@@ -194,6 +207,7 @@ function App() {
   const [tolerance, setTolerance] = useState(0);
   const [activeScenario, setActiveScenario] = useState('balanced');
   const [activeLesson, setActiveLesson] = useState('snapshot');
+  const [selectedCurrency, setSelectedCurrency] = useState('USD');
 
   const metrics = useMemo(() => {
     const assets = total(sheet.assets);
@@ -244,7 +258,11 @@ function App() {
   }
 
   function exportJson() {
-    const payload = JSON.stringify({ sheet, metrics, exportedAt: new Date().toISOString() }, null, 2);
+    const payload = JSON.stringify(
+      { currency: selectedCurrency, sheet, metrics, exportedAt: new Date().toISOString() },
+      null,
+      2,
+    );
     const blob = new Blob([payload], { type: 'application/json' });
     const url = URL.createObjectURL(blob);
     const link = document.createElement('a');
@@ -285,6 +303,14 @@ function App() {
           popover: {
             title: 'Try guided scenarios',
             description: 'Switch between examples to see how financing choices and missing entries change the balance.',
+            side: 'bottom',
+          },
+        },
+        {
+          element: '[data-tour="currency"]',
+          popover: {
+            title: 'Choose your currency',
+            description: 'Pick the currency symbol and formatting style you want to use for the entire simulator.',
             side: 'bottom',
           },
         },
@@ -355,7 +381,7 @@ function App() {
         <div className={`balance-orb ${metrics.balanced ? 'is-balanced' : 'is-off'}`}>
           <Scale size={42} />
           <span>{metrics.balanced ? 'Balanced' : 'Out of balance'}</span>
-          <strong>{currency(Math.abs(metrics.variance))}</strong>
+          <strong>{currency(Math.abs(metrics.variance), selectedCurrency)}</strong>
           <small>{metrics.balanced ? 'Within tolerance' : metrics.variance > 0 ? 'Assets exceed funding' : 'Funding exceeds assets'}</small>
         </div>
       </section>
@@ -449,6 +475,21 @@ function App() {
           ))}
         </div>
         <div className="actions">
+          <label className="currency-picker" data-tour="currency">
+            <CircleDollarSign size={16} />
+            Currency
+            <select
+              aria-label="Currency"
+              value={selectedCurrency}
+              onChange={(event) => setSelectedCurrency(event.target.value)}
+            >
+              {currencyOptions.map((option) => (
+                <option key={option.code} value={option.code}>
+                  {option.code} - {option.label}
+                </option>
+              ))}
+            </select>
+          </label>
           <label className="tolerance">
             <LockKeyhole size={16} />
             Tolerance
@@ -476,9 +517,9 @@ function App() {
       </section>
 
       <section className="dashboard" data-tour="metrics">
-        <Metric icon={CircleDollarSign} label="Total assets" value={currency(metrics.assets)} />
-        <Metric icon={BadgeDollarSign} label="Liabilities + equity" value={currency(metrics.funding)} />
-        <Metric icon={Activity} label="Working capital" value={currency(metrics.workingCapital)} />
+        <Metric icon={CircleDollarSign} label="Total assets" value={currency(metrics.assets, selectedCurrency)} />
+        <Metric icon={BadgeDollarSign} label="Liabilities + equity" value={currency(metrics.funding, selectedCurrency)} />
+        <Metric icon={Activity} label="Working capital" value={currency(metrics.workingCapital, selectedCurrency)} />
         <Metric icon={TrendingUp} label="Debt ratio" value={percent(metrics.debtRatio)} />
       </section>
 
@@ -491,6 +532,7 @@ function App() {
               rows={sheet[section]}
               section={section}
               sectionTotal={total(sheet[section])}
+              selectedCurrency={selectedCurrency}
               onAdd={() => addRow(section)}
               onRemove={(id) => removeRow(section, id)}
               onUpdate={(id, field, value) => updateRow(section, id, field, value)}
@@ -510,12 +552,12 @@ function App() {
           <div className="equation">
             <div>
               <span>Assets</span>
-              <strong>{currency(metrics.assets)}</strong>
+              <strong>{currency(metrics.assets, selectedCurrency)}</strong>
             </div>
             <span className="operator">=</span>
             <div>
               <span>Liabilities + Equity</span>
-              <strong>{currency(metrics.funding)}</strong>
+              <strong>{currency(metrics.funding, selectedCurrency)}</strong>
             </div>
           </div>
 
@@ -526,7 +568,7 @@ function App() {
               <p>
                 {metrics.balanced
                   ? 'The accounting equation is aligned for the current entries.'
-                  : `Adjust entries by ${currency(Math.abs(metrics.variance))} to bring the sheet back into balance.`}
+                  : `Adjust entries by ${currency(Math.abs(metrics.variance), selectedCurrency)} to bring the sheet back into balance.`}
               </p>
             </div>
           </div>
@@ -574,7 +616,7 @@ function Metric({ icon: Icon, label, value }) {
   );
 }
 
-function LedgerSection({ maxTotal, rows, section, sectionTotal, onAdd, onRemove, onUpdate }) {
+function LedgerSection({ maxTotal, rows, section, sectionTotal, selectedCurrency, onAdd, onRemove, onUpdate }) {
   const meta = sectionMeta[section];
   const Icon = meta.icon;
 
@@ -585,7 +627,7 @@ function LedgerSection({ maxTotal, rows, section, sectionTotal, onAdd, onRemove,
           <Icon size={22} />
           <h2>{meta.title}</h2>
         </div>
-        <strong>{currency(sectionTotal)}</strong>
+        <strong>{currency(sectionTotal, selectedCurrency)}</strong>
       </header>
       <div className="total-bar">
         <span style={{ width: `${Math.max(3, (sectionTotal / maxTotal) * 100)}%` }} />

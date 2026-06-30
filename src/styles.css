@@ -18,6 +18,7 @@ body {
 
 button,
 input,
+select,
 a {
   font: inherit;
 }
@@ -435,7 +436,8 @@ h1 {
 
 .scenario-tabs,
 .actions button,
-.tolerance {
+.tolerance,
+.currency-picker {
   backdrop-filter: blur(18px);
   background: rgba(255, 255, 255, 0.72);
   border: 1px solid rgba(23, 33, 29, 0.08);
@@ -462,7 +464,8 @@ h1 {
 }
 
 .actions button,
-.tolerance {
+.tolerance,
+.currency-picker {
   border-radius: 16px;
   color: #27352f;
   font-weight: 800;
@@ -481,7 +484,14 @@ h1 {
   gap: 8px;
 }
 
-.tolerance input {
+.currency-picker {
+  align-items: center;
+  display: flex;
+  gap: 8px;
+}
+
+.tolerance input,
+.currency-picker select {
   background: rgba(255, 255, 255, 0.75);
   border: 1px solid rgba(23, 33, 29, 0.08);
   border-radius: 10px;
@@ -489,6 +499,21 @@ h1 {
   font-weight: 800;
   max-width: 94px;
   padding: 8px;
+}
+
+.currency-picker select {
+  appearance: none;
+  background-image:
+    linear-gradient(45deg, transparent 50%, #41554c 50%),
+    linear-gradient(135deg, #41554c 50%, transparent 50%);
+  background-position:
+    calc(100% - 15px) 52%,
+    calc(100% - 10px) 52%;
+  background-repeat: no-repeat;
+  background-size: 5px 5px;
+  max-width: 190px;
+  min-width: 156px;
+  padding-right: 30px;
 }
 
 .dashboard {
@@ -839,9 +864,15 @@ h1 {
   }
 
   .actions button,
-  .tolerance {
+  .tolerance,
+  .currency-picker {
     justify-content: center;
     width: 100%;
+  }
+
+  .currency-picker select {
+    flex: 1;
+    max-width: none;
   }
 
   .dashboard {
