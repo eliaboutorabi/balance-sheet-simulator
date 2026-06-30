@@ -646,7 +646,7 @@ h1 {
   padding: 0 12px;
 }
 
-.entry-row input[type="number"] {
+.entry-row .amount-input {
   font-weight: 800;
   text-align: right;
 }

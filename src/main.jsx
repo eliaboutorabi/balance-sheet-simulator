@@ -188,10 +188,24 @@ function total(rows) {
   return rows.reduce((sum, row) => sum + Number(row.amount || 0), 0);
 }
 
+function formatNumberInput(value) {
+  const number = Number(value || 0);
+
+  return new Intl.NumberFormat('en-US', {
+    maximumFractionDigits: 2,
+  }).format(number);
+}
+
+function parseFormattedNumber(value) {
+  const parsed = Number(String(value).replace(/,/g, ''));
+
+  return Number.isFinite(parsed) ? parsed : 0;
+}
+
 function currency(value, selectedCurrency) {
   const option = currencyOptions.find(({ code }) => code === selectedCurrency) ?? currencyOptions[0];
 
-  return new Intl.NumberFormat(option.locale, {
+  return new Intl.NumberFormat('en-US', {
     style: 'currency',
     currency: option.code,
     maximumFractionDigits: 0,
@@ -231,7 +245,7 @@ function App() {
       ...current,
       [section]: current[section].map((row) =>
         row.id === id
-          ? { ...row, [field]: field === 'amount' ? Number(value) : value }
+          ? { ...row, [field]: field === 'amount' ? parseFormattedNumber(value) : value }
           : row,
       ),
     }));
@@ -495,11 +509,10 @@ function App() {
             <LockKeyhole size={16} />
             Tolerance
             <input
-              min="0"
-              step="100"
-              type="number"
-              value={tolerance}
-              onChange={(event) => setTolerance(Number(event.target.value))}
+              inputMode="decimal"
+              type="text"
+              value={formatNumberInput(tolerance)}
+              onChange={(event) => setTolerance(parseFormattedNumber(event.target.value))}
             />
           </label>
           <button type="button" onClick={() => loadScenario('balanced')}>
@@ -643,10 +656,10 @@ function LedgerSection({ maxTotal, rows, section, sectionTotal, selectedCurrency
             />
             <input
               aria-label={`${row.label} amount`}
-              min="0"
-              step="100"
-              type="number"
-              value={row.amount}
+              className="amount-input"
+              inputMode="decimal"
+              type="text"
+              value={formatNumberInput(row.amount)}
               onChange={(event) => onUpdate(row.id, 'amount', event.target.value)}
             />
             <button aria-label={`Remove ${row.label}`} type="button" onClick={() => onRemove(row.id)}>
