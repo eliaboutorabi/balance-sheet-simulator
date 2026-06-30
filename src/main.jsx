@@ -39,16 +39,20 @@ import 'driver.js/dist/driver.css';
 import './styles.css';
 
 const startingData = {
-  assets: [
+  currentAssets: [
     { id: 'cash', label: 'Cash and equivalents', amount: 42500 },
     { id: 'receivables', label: 'Accounts receivable', amount: 18200 },
     { id: 'inventory', label: 'Inventory', amount: 26750 },
+  ],
+  nonCurrentAssets: [
     { id: 'equipment', label: 'Property and equipment', amount: 68400 },
   ],
-  liabilities: [
+  currentLiabilities: [
     { id: 'payables', label: 'Accounts payable', amount: 19850 },
-    { id: 'debt', label: 'Long-term debt', amount: 54800 },
     { id: 'accruals', label: 'Accrued expenses', amount: 9400 },
+  ],
+  nonCurrentLiabilities: [
+    { id: 'debt', label: 'Long-term debt', amount: 54800 },
   ],
   equity: [
     { id: 'capital', label: 'Contributed capital', amount: 50000 },
@@ -64,16 +68,20 @@ const scenarios = {
   leveraged: {
     label: 'Leveraged Growth',
     data: {
-      assets: [
+      currentAssets: [
         { id: 'cash', label: 'Cash and equivalents', amount: 37500 },
         { id: 'receivables', label: 'Accounts receivable', amount: 24400 },
         { id: 'inventory', label: 'Inventory', amount: 43200 },
+      ],
+      nonCurrentAssets: [
         { id: 'equipment', label: 'Property and equipment', amount: 122000 },
       ],
-      liabilities: [
+      currentLiabilities: [
         { id: 'payables', label: 'Accounts payable', amount: 28600 },
-        { id: 'debt', label: 'Long-term debt', amount: 108500 },
         { id: 'accruals', label: 'Accrued expenses', amount: 13800 },
+      ],
+      nonCurrentLiabilities: [
+        { id: 'debt', label: 'Long-term debt', amount: 108500 },
       ],
       equity: [
         { id: 'capital', label: 'Contributed capital', amount: 52000 },
@@ -84,16 +92,20 @@ const scenarios = {
   mismatch: {
     label: 'Needs Review',
     data: {
-      assets: [
+      currentAssets: [
         { id: 'cash', label: 'Cash and equivalents', amount: 58300 },
         { id: 'receivables', label: 'Accounts receivable', amount: 21400 },
         { id: 'inventory', label: 'Inventory', amount: 29100 },
+      ],
+      nonCurrentAssets: [
         { id: 'equipment', label: 'Property and equipment', amount: 75500 },
       ],
-      liabilities: [
+      currentLiabilities: [
         { id: 'payables', label: 'Accounts payable', amount: 22100 },
-        { id: 'debt', label: 'Long-term debt', amount: 49600 },
         { id: 'accruals', label: 'Accrued expenses', amount: 11800 },
+      ],
+      nonCurrentLiabilities: [
+        { id: 'debt', label: 'Long-term debt', amount: 49600 },
       ],
       equity: [
         { id: 'capital', label: 'Contributed capital', amount: 58500 },
@@ -104,24 +116,45 @@ const scenarios = {
 };
 
 const sectionMeta = {
-  assets: {
-    title: 'Assets',
+  currentAssets: {
+    title: 'Current Assets',
+    singular: 'current asset',
     icon: WalletCards,
-    addLabel: 'Add asset',
+    addLabel: 'Add current asset',
     accent: 'green',
-    lesson: 'Assets are resources the organization controls. They are the things the business can use, sell, collect, or convert into cash.',
-    examples: ['Cash', 'Receivables', 'Inventory', 'Equipment'],
+    lesson: 'Current assets are resources expected to turn into cash, be sold, or be used within one year or one operating cycle.',
+    examples: ['Cash', 'Receivables', 'Inventory', 'Prepaid expenses'],
   },
-  liabilities: {
-    title: 'Liabilities',
-    icon: Landmark,
-    addLabel: 'Add liability',
+  nonCurrentAssets: {
+    title: 'Non-Current Assets',
+    singular: 'non-current asset',
+    icon: Building2,
+    addLabel: 'Add non-current asset',
+    accent: 'green',
+    lesson: 'Non-current assets support the business beyond the next year. They are long-term resources rather than near-term cash sources.',
+    examples: ['Equipment', 'Buildings', 'Vehicles', 'Long-term investments'],
+  },
+  currentLiabilities: {
+    title: 'Current Liabilities',
+    singular: 'current liability',
+    icon: ReceiptText,
+    addLabel: 'Add current liability',
     accent: 'rose',
-    lesson: 'Liabilities are obligations. They represent money, goods, or services the organization still owes to lenders, suppliers, employees, or tax authorities.',
-    examples: ['Payables', 'Loans', 'Accrued expenses'],
+    lesson: 'Current liabilities are obligations normally due within one year or one operating cycle.',
+    examples: ['Payables', 'Accrued expenses', 'Short-term loans'],
+  },
+  nonCurrentLiabilities: {
+    title: 'Non-Current Liabilities',
+    singular: 'non-current liability',
+    icon: Landmark,
+    addLabel: 'Add non-current liability',
+    accent: 'rose',
+    lesson: 'Non-current liabilities are obligations that are not due in the next year, such as long-term borrowing.',
+    examples: ['Long-term debt', 'Lease obligations', 'Deferred tax liabilities'],
   },
   equity: {
     title: 'Equity',
+    singular: 'equity',
     icon: PiggyBank,
     addLabel: 'Add equity',
     accent: 'blue',
@@ -130,12 +163,41 @@ const sectionMeta = {
   },
 };
 
+const ledgerSections = ['currentAssets', 'nonCurrentAssets', 'currentLiabilities', 'nonCurrentLiabilities', 'equity'];
+
+const reportGroups = [
+  {
+    title: 'Assets',
+    totalLabel: 'Total assets',
+    totalKey: 'assets',
+    sections: [
+      { key: 'currentAssets', subtotalLabel: 'Total current assets' },
+      { key: 'nonCurrentAssets', subtotalLabel: 'Total non-current assets' },
+    ],
+  },
+  {
+    title: 'Liabilities',
+    totalLabel: 'Total liabilities',
+    totalKey: 'liabilities',
+    sections: [
+      { key: 'currentLiabilities', subtotalLabel: 'Total current liabilities' },
+      { key: 'nonCurrentLiabilities', subtotalLabel: 'Total non-current liabilities' },
+    ],
+  },
+  {
+    title: 'Equity',
+    totalLabel: 'Total equity',
+    totalKey: 'equity',
+    sections: [{ key: 'equity', subtotalLabel: null }],
+  },
+];
+
 const lessons = [
   {
     key: 'snapshot',
     icon: BookOpen,
     title: 'A balance sheet is a snapshot',
-    body: 'It shows what an organization owns, what it owes, and what is left for owners at one point in time. Unlike an income statement, it is not about activity over a period.',
+    body: 'It shows what an organization owns, what it owes, and what is left for owners at one point in time. A standard format separates near-term items from long-term items.',
     takeaway: 'Think: financial position today.',
   },
   {
@@ -148,9 +210,9 @@ const lessons = [
   {
     key: 'double-entry',
     icon: ReceiptText,
-    title: 'Every transaction touches two places',
-    body: 'If the company borrows cash, assets rise and liabilities rise. If it uses cash to buy equipment, one asset goes down while another asset goes up.',
-    takeaway: 'Balanced transactions have two sides.',
+    title: 'Current vs. non-current matters',
+    body: 'Current items are expected to be collected, used, or paid within about one year. Non-current items usually last longer than one year.',
+    takeaway: 'Working capital = current assets - current liabilities.',
   },
 ];
 
@@ -271,17 +333,35 @@ function App() {
   }, [theme]);
 
   const metrics = useMemo(() => {
-    const assets = total(sheet.assets);
-    const liabilities = total(sheet.liabilities);
+    const currentAssets = total(sheet.currentAssets);
+    const nonCurrentAssets = total(sheet.nonCurrentAssets);
+    const currentLiabilities = total(sheet.currentLiabilities);
+    const nonCurrentLiabilities = total(sheet.nonCurrentLiabilities);
+    const assets = currentAssets + nonCurrentAssets;
+    const liabilities = currentLiabilities + nonCurrentLiabilities;
     const equity = total(sheet.equity);
     const funding = liabilities + equity;
     const variance = assets - funding;
     const balanced = Math.abs(variance) <= tolerance;
-    const workingCapital = assets - liabilities;
+    const workingCapital = currentAssets - currentLiabilities;
     const debtRatio = assets === 0 ? 0 : liabilities / assets;
     const equityRatio = assets === 0 ? 0 : equity / assets;
 
-    return { assets, liabilities, equity, funding, variance, balanced, workingCapital, debtRatio, equityRatio };
+    return {
+      currentAssets,
+      nonCurrentAssets,
+      currentLiabilities,
+      nonCurrentLiabilities,
+      assets,
+      liabilities,
+      equity,
+      funding,
+      variance,
+      balanced,
+      workingCapital,
+      debtRatio,
+      equityRatio,
+    };
   }, [sheet, tolerance]);
 
   const maxTotal = Math.max(metrics.assets, metrics.liabilities, metrics.equity, 1);
@@ -301,7 +381,7 @@ function App() {
   function addRow(section) {
     const item = {
       id: `${section}-${Date.now()}`,
-      label: `New ${sectionMeta[section].title.slice(0, -1).toLowerCase()} line`,
+      label: `New ${sectionMeta[section].singular} line`,
       amount: 0,
     };
     setSheet((current) => ({ ...current, [section]: [...current[section], item] }));
@@ -507,7 +587,8 @@ function App() {
         <LessonCard lesson={lessons.find((lesson) => lesson.key === activeLesson)} />
 
         <div className="concept-grid">
-          {Object.entries(sectionMeta).map(([key, meta]) => {
+          {ledgerSections.map((key) => {
+            const meta = sectionMeta[key];
             const Icon = meta.icon;
             return (
               <article className={`concept-card ${meta.accent}`} key={key}>
@@ -658,7 +739,7 @@ function App() {
 
       <section className="workspace">
         <div className="ledger-grid" data-tour="ledger">
-          {Object.keys(sectionMeta).map((section) => (
+          {ledgerSections.map((section) => (
             <LedgerSection
               key={section}
               maxTotal={maxTotal}
@@ -714,8 +795,8 @@ function App() {
           <div className="coach-note">
             <Layers size={20} />
             <p>
-              When the sheet does not balance, look for a missing second side of a transaction.
-              For example, borrowing cash adds both cash and debt.
+              Current assets and current liabilities explain short-term liquidity. The full
+              balance still depends on total assets equaling total liabilities plus equity.
             </p>
           </div>
         </aside>
@@ -745,6 +826,30 @@ function buildReportHtml({ companyName, reportDate, sheet, metrics, selectedCurr
       )
       .join('');
 
+  const renderGroup = (group) => `
+    <div>
+      <h2>${escapeHtml(group.title)}</h2>
+      <table>
+        ${group.sections
+          .map(({ key, subtotalLabel }) => {
+            const rows = sheet[key];
+            const sectionTotal = total(rows);
+            return `
+              <tr class="section-heading"><td colspan="2">${escapeHtml(sectionMeta[key].title)}</td></tr>
+              ${renderRows(rows)}
+              ${
+                subtotalLabel
+                  ? `<tr class="subtotal"><td>${escapeHtml(subtotalLabel)}</td><td>${escapeHtml(currency(sectionTotal, selectedCurrency))}</td></tr>`
+                  : ''
+              }
+            `;
+          })
+          .join('')}
+        <tr class="total"><td>${escapeHtml(group.totalLabel)}</td><td>${escapeHtml(currency(metrics[group.totalKey], selectedCurrency))}</td></tr>
+      </table>
+    </div>
+  `;
+
   return `<!doctype html>
 <html lang="en">
   <head>
@@ -770,6 +875,8 @@ function buildReportHtml({ companyName, reportDate, sheet, metrics, selectedCurr
       table { border-collapse: collapse; width: 100%; }
       td { border-bottom: 1px solid #e8e3d9; padding: 10px 0; }
       td:last-child { font-weight: 800; text-align: right; white-space: nowrap; }
+      .section-heading td { border-bottom: 0; color: #39745d; font-size: 12px; font-weight: 900; padding: 16px 0 4px; text-align: left; text-transform: uppercase; white-space: normal; }
+      .subtotal td { color: #17211d; font-weight: 900; }
       .total td { border-bottom: 2px solid #17211d; border-top: 2px solid #17211d; font-weight: 900; }
       .equation { background: #17211d; border-radius: 16px; color: #fff; margin-top: 28px; padding: 18px; text-align: center; }
       .footer { color: #6a786f; font-size: 12px; margin-top: 28px; }
@@ -792,9 +899,7 @@ function buildReportHtml({ companyName, reportDate, sheet, metrics, selectedCurr
         <div><span>Variance</span><strong>${escapeHtml(currency(Math.abs(metrics.variance), selectedCurrency))}</strong></div>
       </section>
       <section class="grid">
-        <div><h2>Assets</h2><table>${renderRows(sheet.assets)}<tr class="total"><td>Total assets</td><td>${escapeHtml(currency(metrics.assets, selectedCurrency))}</td></tr></table></div>
-        <div><h2>Liabilities</h2><table>${renderRows(sheet.liabilities)}<tr class="total"><td>Total liabilities</td><td>${escapeHtml(currency(metrics.liabilities, selectedCurrency))}</td></tr></table></div>
-        <div><h2>Equity</h2><table>${renderRows(sheet.equity)}<tr class="total"><td>Total equity</td><td>${escapeHtml(currency(metrics.equity, selectedCurrency))}</td></tr></table></div>
+        ${reportGroups.map(renderGroup).join('')}
       </section>
       <section class="equation">Assets ${escapeHtml(currency(metrics.assets, selectedCurrency))} = Liabilities + Equity ${escapeHtml(currency(metrics.funding, selectedCurrency))}</section>
       <p class="footer">Generated by Balance Sheet Simulator. Built by Elham Aboutorabi.</p>
@@ -825,9 +930,15 @@ function ReportPreview({ companyName, reportDate, sheet, metrics, selectedCurren
         </div>
 
         <div className="report-columns">
-          <ReportTable title="Assets" rows={sheet.assets} totalLabel="Total assets" totalValue={metrics.assets} selectedCurrency={selectedCurrency} />
-          <ReportTable title="Liabilities" rows={sheet.liabilities} totalLabel="Total liabilities" totalValue={metrics.liabilities} selectedCurrency={selectedCurrency} />
-          <ReportTable title="Equity" rows={sheet.equity} totalLabel="Total equity" totalValue={metrics.equity} selectedCurrency={selectedCurrency} />
+          {reportGroups.map((group) => (
+            <ReportTable
+              key={group.title}
+              group={group}
+              metrics={metrics}
+              sheet={sheet}
+              selectedCurrency={selectedCurrency}
+            />
+          ))}
         </div>
 
         <div className="report-equation">
@@ -847,21 +958,37 @@ function ReportStat({ label, value }) {
   );
 }
 
-function ReportTable({ title, rows, totalLabel, totalValue, selectedCurrency }) {
+function ReportTable({ group, metrics, sheet, selectedCurrency }) {
   return (
     <article>
-      <h3>{title}</h3>
+      <h3>{group.title}</h3>
       <table>
         <tbody>
-          {rows.map((row) => (
-            <tr key={row.id}>
-              <td>{row.label}</td>
-              <td>{currency(row.amount, selectedCurrency)}</td>
-            </tr>
-          ))}
+          {group.sections.map(({ key, subtotalLabel }) => {
+            const rows = sheet[key];
+            return (
+              <React.Fragment key={key}>
+                <tr className="section-heading">
+                  <td colSpan="2">{sectionMeta[key].title}</td>
+                </tr>
+                {rows.map((row) => (
+                  <tr key={row.id}>
+                    <td>{row.label}</td>
+                    <td>{currency(row.amount, selectedCurrency)}</td>
+                  </tr>
+                ))}
+                {subtotalLabel && (
+                  <tr className="subtotal-row">
+                    <td>{subtotalLabel}</td>
+                    <td>{currency(total(rows), selectedCurrency)}</td>
+                  </tr>
+                )}
+              </React.Fragment>
+            );
+          })}
           <tr className="total-row">
-            <td>{totalLabel}</td>
-            <td>{currency(totalValue, selectedCurrency)}</td>
+            <td>{group.totalLabel}</td>
+            <td>{currency(metrics[group.totalKey], selectedCurrency)}</td>
           </tr>
         </tbody>
       </table>

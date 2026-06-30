@@ -959,6 +959,22 @@ h1 {
   white-space: nowrap;
 }
 
+.report-columns .section-heading td {
+  border-bottom: 0;
+  color: #39745d;
+  font-size: 0.76rem;
+  font-weight: 950;
+  padding: 16px 0 4px;
+  text-align: left;
+  text-transform: uppercase;
+  white-space: normal;
+}
+
+.report-columns .subtotal-row td {
+  color: #17211d;
+  font-weight: 950;
+}
+
 .report-columns .total-row td {
   border-bottom: 2px solid #17211d;
   border-top: 2px solid #17211d;
@@ -1185,8 +1201,13 @@ h1 {
 :root[data-theme="dark"] .report-paper .report-header h2,
 :root[data-theme="dark"] .report-paper .report-summary strong,
 :root[data-theme="dark"] .report-paper .report-columns td:last-child,
+:root[data-theme="dark"] .report-paper .report-columns .subtotal-row td,
 :root[data-theme="dark"] .report-paper .report-columns .total-row td {
   color: #17211d;
+}
+
+:root[data-theme="dark"] .report-paper .report-columns .section-heading td {
+  color: #39745d;
 }
 
 :root[data-theme="dark"] .report-paper .report-header p,
@@ -1445,6 +1466,10 @@ h1 {
   .report-columns td:last-child {
     padding-left: 0;
     text-align: left;
+  }
+
+  .report-columns .section-heading td {
+    padding-top: 14px;
   }
 
   .report-columns tr {
