@@ -1022,7 +1022,7 @@ h1 {
 
 @media (max-width: 720px) {
   .app-shell {
-    padding: 16px;
+    padding: 12px;
   }
 
   .hero-copy,
@@ -1036,6 +1036,80 @@ h1 {
     border-radius: 18px;
   }
 
+  .hero {
+    gap: 12px;
+    margin-bottom: 12px;
+  }
+
+  .hero-copy {
+    padding: 24px 20px;
+  }
+
+  h1 {
+    font-size: clamp(2.15rem, 13vw, 3.35rem);
+  }
+
+  .hero-copy p {
+    font-size: 1rem;
+    line-height: 1.62;
+    margin-top: 18px;
+  }
+
+  .hero-actions {
+    align-items: stretch;
+    display: grid;
+    grid-template-columns: 1fr;
+    margin-top: 22px;
+  }
+
+  .cta,
+  .text-link {
+    justify-content: center;
+    width: 100%;
+  }
+
+  .balance-orb {
+    min-height: 214px;
+    padding: 24px;
+  }
+
+  .learning-lab,
+  .exercise-strip,
+  .report-setup,
+  .report-preview,
+  .ledger-card,
+  .analysis-panel {
+    padding: 18px;
+  }
+
+  .lesson-tabs button {
+    line-height: 1.25;
+    min-height: 56px;
+  }
+
+  .lesson-card {
+    padding: 18px;
+  }
+
+  .concept-card,
+  .exercise-card {
+    padding: 16px;
+  }
+
+  .exercise-card {
+    min-height: 132px;
+  }
+
+  .report-fields label {
+    align-items: start;
+    grid-template-columns: auto minmax(0, 1fr);
+  }
+
+  .report-fields label input {
+    grid-column: 1 / -1;
+    width: 100%;
+  }
+
   .command-bar {
     align-items: stretch;
     flex-direction: column;
@@ -1043,10 +1117,14 @@ h1 {
 
   .scenario-tabs {
     border-radius: 18px;
+    display: grid;
+    grid-template-columns: 1fr;
+    width: 100%;
   }
 
   .scenario-tabs button {
-    flex: 1;
+    border-radius: 13px;
+    width: 100%;
   }
 
   .actions {
@@ -1061,6 +1139,19 @@ h1 {
     width: 100%;
   }
 
+  .tolerance,
+  .currency-picker {
+    display: grid;
+    grid-template-columns: auto auto minmax(0, 1fr);
+  }
+
+  .tolerance input,
+  .currency-picker select {
+    justify-self: stretch;
+    max-width: none;
+    width: 100%;
+  }
+
   .currency-picker select {
     flex: 1;
     max-width: none;
@@ -1070,8 +1161,28 @@ h1 {
     grid-template-columns: 1fr;
   }
 
+  .metric {
+    min-height: 108px;
+    padding: 18px;
+  }
+
   .entry-row {
-    grid-template-columns: minmax(0, 1fr) 112px 38px;
+    align-items: stretch;
+    grid-template-columns: minmax(0, 1fr) 46px;
+  }
+
+  .entry-row input:first-child {
+    grid-column: 1 / -1;
+  }
+
+  .entry-row .amount-input {
+    grid-column: 1 / 2;
+    min-height: 46px;
+  }
+
+  .entry-row button {
+    height: 46px;
+    width: 46px;
   }
 
   .equation {
@@ -1080,6 +1191,44 @@ h1 {
 
   .operator {
     display: none;
+  }
+
+  .report-paper {
+    border-radius: 14px;
+    padding: 18px;
+  }
+
+  .report-header {
+    display: grid;
+    gap: 14px;
+  }
+
+  .report-status {
+    justify-self: start;
+  }
+
+  .report-columns td {
+    display: block;
+    padding: 7px 0;
+  }
+
+  .report-columns td:last-child {
+    padding-left: 0;
+    text-align: left;
+  }
+
+  .report-columns tr {
+    border-bottom: 1px solid #e8e3d9;
+    display: block;
+    padding: 6px 0;
+  }
+
+  .report-columns td {
+    border-bottom: 0;
+  }
+
+  .report-equation {
+    line-height: 1.5;
   }
 }
 
