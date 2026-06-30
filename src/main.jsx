@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { createRoot } from 'react-dom/client';
 import { driver } from 'driver.js';
 import {
@@ -22,6 +22,7 @@ import {
   LineChart,
   LockKeyhole,
   Minus,
+  Moon,
   PiggyBank,
   Plus,
   Printer,
@@ -29,6 +30,7 @@ import {
   RefreshCcw,
   Scale,
   Sparkles,
+  Sun,
   Target,
   TrendingUp,
   WalletCards,
@@ -244,6 +246,13 @@ function percent(value) {
   return `${Math.round(value * 100)}%`;
 }
 
+function getInitialTheme() {
+  if (typeof window === 'undefined') return 'light';
+  const savedTheme = window.localStorage.getItem('balance-sheet-theme');
+  if (savedTheme === 'dark' || savedTheme === 'light') return savedTheme;
+  return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+}
+
 function App() {
   const [sheet, setSheet] = useState(() => cloneData(startingData));
   const [tolerance, setTolerance] = useState(0);
@@ -252,6 +261,14 @@ function App() {
   const [selectedCurrency, setSelectedCurrency] = useState('USD');
   const [companyName, setCompanyName] = useState('Example Company');
   const [reportDate, setReportDate] = useState(todayISO);
+  const [theme, setTheme] = useState(getInitialTheme);
+
+  const darkMode = theme === 'dark';
+
+  useEffect(() => {
+    document.documentElement.dataset.theme = theme;
+    window.localStorage.setItem('balance-sheet-theme', theme);
+  }, [theme]);
 
   const metrics = useMemo(() => {
     const assets = total(sheet.assets);
@@ -323,6 +340,10 @@ function App() {
     window.print();
   }
 
+  function toggleTheme() {
+    setTheme((currentTheme) => (currentTheme === 'dark' ? 'light' : 'dark'));
+  }
+
   function startTour() {
     const tour = driver({
       showProgress: true,
@@ -370,6 +391,14 @@ function App() {
           popover: {
             title: 'Choose your currency',
             description: 'Pick the currency symbol and formatting style you want to use for the entire simulator.',
+            side: 'bottom',
+          },
+        },
+        {
+          element: '[data-tour="theme"]',
+          popover: {
+            title: 'Switch the theme',
+            description: 'Use dark mode when you want a calmer workspace. Your choice is saved for next time.',
             side: 'bottom',
           },
         },
@@ -591,6 +620,16 @@ function App() {
               onChange={(event) => setTolerance(parseFormattedNumber(event.target.value))}
             />
           </label>
+          <button
+            type="button"
+            className="theme-toggle"
+            onClick={toggleTheme}
+            aria-pressed={darkMode}
+            data-tour="theme"
+          >
+            {darkMode ? <Sun size={17} /> : <Moon size={17} />}
+            {darkMode ? 'Light mode' : 'Dark mode'}
+          </button>
           <button type="button" onClick={() => loadScenario('balanced')}>
             <RefreshCcw size={17} />
             Reset
