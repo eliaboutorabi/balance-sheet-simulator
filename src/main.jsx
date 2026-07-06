@@ -45,7 +45,8 @@ const startingData = {
     { id: 'inventory', label: 'Inventory', amount: 26750 },
   ],
   nonCurrentAssets: [
-    { id: 'equipment', label: 'Property and equipment', amount: 68400 },
+    { id: 'equipment', label: 'Equipment', amount: 68400 },
+    { id: 'accumulated-depreciation', label: 'Less: accumulated depreciation', amount: -12000 },
   ],
   currentLiabilities: [
     { id: 'payables', label: 'Accounts payable', amount: 19850 },
@@ -56,7 +57,7 @@ const startingData = {
   ],
   equity: [
     { id: 'capital', label: 'Contributed capital', amount: 50000 },
-    { id: 'retained', label: 'Retained earnings', amount: 21800 },
+    { id: 'retained', label: 'Retained earnings', amount: 9800 },
   ],
 };
 
@@ -74,7 +75,8 @@ const scenarios = {
         { id: 'inventory', label: 'Inventory', amount: 43200 },
       ],
       nonCurrentAssets: [
-        { id: 'equipment', label: 'Property and equipment', amount: 122000 },
+        { id: 'equipment', label: 'Equipment', amount: 122000 },
+        { id: 'accumulated-depreciation', label: 'Less: accumulated depreciation', amount: -22000 },
       ],
       currentLiabilities: [
         { id: 'payables', label: 'Accounts payable', amount: 28600 },
@@ -85,7 +87,7 @@ const scenarios = {
       ],
       equity: [
         { id: 'capital', label: 'Contributed capital', amount: 52000 },
-        { id: 'retained', label: 'Retained earnings', amount: 24200 },
+        { id: 'retained', label: 'Retained earnings', amount: 2200 },
       ],
     },
   },
@@ -98,7 +100,8 @@ const scenarios = {
         { id: 'inventory', label: 'Inventory', amount: 29100 },
       ],
       nonCurrentAssets: [
-        { id: 'equipment', label: 'Property and equipment', amount: 75500 },
+        { id: 'equipment', label: 'Equipment', amount: 75500 },
+        { id: 'accumulated-depreciation', label: 'Less: accumulated depreciation', amount: -15000 },
       ],
       currentLiabilities: [
         { id: 'payables', label: 'Accounts payable', amount: 22100 },
@@ -109,7 +112,7 @@ const scenarios = {
       ],
       equity: [
         { id: 'capital', label: 'Contributed capital', amount: 58500 },
-        { id: 'retained', label: 'Retained earnings', amount: 33600 },
+        { id: 'retained', label: 'Retained earnings', amount: 18600 },
       ],
     },
   },
@@ -131,8 +134,8 @@ const sectionMeta = {
     icon: Building2,
     addLabel: 'Add non-current asset',
     accent: 'green',
-    lesson: 'Non-current assets support the business beyond the next year. They are long-term resources rather than near-term cash sources.',
-    examples: ['Equipment', 'Buildings', 'Vehicles', 'Long-term investments'],
+    lesson: 'Non-current assets support the business beyond the next year. Depreciation is commonly shown as a contra-asset that reduces equipment or property value.',
+    examples: ['Equipment', 'Accumulated depreciation', 'Vehicles', 'Long-term investments'],
   },
   currentLiabilities: {
     title: 'Current Liabilities',
