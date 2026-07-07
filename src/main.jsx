@@ -860,18 +860,18 @@ function buildReportHtml({ companyName, reportDate, sheet, metrics, selectedCurr
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>${escapeHtml(companyName || 'Balance Sheet')} - Balance Sheet</title>
     <style>
-      body { background: #f6f3ed; color: #17211d; font-family: Inter, Arial, sans-serif; margin: 0; padding: 40px; }
+      body { background: #f6f3ed; color: #0b1f3a; font-family: Inter, Arial, sans-serif; margin: 0; padding: 40px; }
       .report { background: #fff; border: 1px solid #ddd8cd; box-shadow: 0 24px 70px rgba(42, 50, 44, 0.12); margin: 0 auto; max-width: 900px; padding: 44px; }
-      .header { border-bottom: 3px solid #17211d; display: flex; justify-content: space-between; gap: 24px; padding-bottom: 24px; }
+      .header { border-bottom: 3px solid #0b1f3a; display: flex; justify-content: space-between; gap: 24px; padding-bottom: 24px; }
       .kicker { color: #39745d; font-size: 12px; font-weight: 800; letter-spacing: 0.08em; text-transform: uppercase; }
       h1 { font-size: 36px; line-height: 1; margin: 8px 0; }
-      .date { color: #5f6f68; font-weight: 700; }
+      .date { color: #263e5c; font-weight: 700; }
       .status { align-self: start; border-radius: 999px; color: #fff; font-weight: 800; padding: 10px 14px; }
       .status.ok { background: #2d7b59; }
       .status.warn { background: #a34950; }
       .summary { display: grid; gap: 14px; grid-template-columns: repeat(3, 1fr); margin: 28px 0; }
       .summary div { background: #f6f3ed; border-radius: 14px; padding: 16px; }
-      .summary span { color: #66746e; display: block; font-size: 12px; font-weight: 800; text-transform: uppercase; }
+      .summary span { color: #263e5c; display: block; font-size: 12px; font-weight: 800; text-transform: uppercase; }
       .summary strong { display: block; font-size: 22px; margin-top: 8px; }
       .grid { display: grid; gap: 22px; grid-template-columns: repeat(3, 1fr); }
       h2 { font-size: 18px; margin: 0 0 12px; }
@@ -879,10 +879,10 @@ function buildReportHtml({ companyName, reportDate, sheet, metrics, selectedCurr
       td { border-bottom: 1px solid #e8e3d9; padding: 10px 0; }
       td:last-child { font-weight: 800; text-align: right; white-space: nowrap; }
       .section-heading td { border-bottom: 0; color: #39745d; font-size: 12px; font-weight: 900; padding: 16px 0 4px; text-align: left; text-transform: uppercase; white-space: normal; }
-      .subtotal td { color: #17211d; font-weight: 900; }
-      .total td { border-bottom: 2px solid #17211d; border-top: 2px solid #17211d; font-weight: 900; }
-      .equation { background: #17211d; border-radius: 16px; color: #fff; margin-top: 28px; padding: 18px; text-align: center; }
-      .footer { color: #6a786f; font-size: 12px; margin-top: 28px; }
+      .subtotal td { color: #0b1f3a; font-weight: 900; }
+      .total td { border-bottom: 2px solid #0b1f3a; border-top: 2px solid #0b1f3a; font-weight: 900; }
+      .equation { background: #0b1f3a; border-radius: 16px; color: #fff; margin-top: 28px; padding: 18px; text-align: center; }
+      .footer { color: #263e5c; font-size: 12px; margin-top: 28px; }
       @media print { body { background: #fff; padding: 0; } .report { border: 0; box-shadow: none; } }
     </style>
   </head>
