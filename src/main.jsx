@@ -43,6 +43,7 @@ const startingData = {
     { id: 'cash', label: 'Cash and equivalents', amount: 42500 },
     { id: 'receivables', label: 'Accounts receivable', amount: 18200 },
     { id: 'inventory', label: 'Inventory', amount: 26750 },
+    { id: 'prepaid-expenses', label: 'Prepaid expenses', amount: 6400 },
   ],
   nonCurrentAssets: [
     { id: 'equipment', label: 'Equipment', amount: 68400 },
@@ -57,7 +58,7 @@ const startingData = {
   ],
   equity: [
     { id: 'capital', label: 'Contributed capital', amount: 50000 },
-    { id: 'retained', label: 'Retained earnings', amount: 9800 },
+    { id: 'retained', label: 'Retained earnings', amount: 16200 },
   ],
 };
 
@@ -73,6 +74,7 @@ const scenarios = {
         { id: 'cash', label: 'Cash and equivalents', amount: 37500 },
         { id: 'receivables', label: 'Accounts receivable', amount: 24400 },
         { id: 'inventory', label: 'Inventory', amount: 43200 },
+        { id: 'prepaid-expenses', label: 'Prepaid expenses', amount: 7800 },
       ],
       nonCurrentAssets: [
         { id: 'equipment', label: 'Equipment', amount: 122000 },
@@ -87,7 +89,7 @@ const scenarios = {
       ],
       equity: [
         { id: 'capital', label: 'Contributed capital', amount: 52000 },
-        { id: 'retained', label: 'Retained earnings', amount: 2200 },
+        { id: 'retained', label: 'Retained earnings', amount: 10000 },
       ],
     },
   },
@@ -98,6 +100,7 @@ const scenarios = {
         { id: 'cash', label: 'Cash and equivalents', amount: 58300 },
         { id: 'receivables', label: 'Accounts receivable', amount: 21400 },
         { id: 'inventory', label: 'Inventory', amount: 29100 },
+        { id: 'prepaid-expenses', label: 'Prepaid expenses', amount: 5200 },
       ],
       nonCurrentAssets: [
         { id: 'equipment', label: 'Equipment', amount: 75500 },
@@ -112,7 +115,7 @@ const scenarios = {
       ],
       equity: [
         { id: 'capital', label: 'Contributed capital', amount: 58500 },
-        { id: 'retained', label: 'Retained earnings', amount: 18600 },
+        { id: 'retained', label: 'Retained earnings', amount: 23800 },
       ],
     },
   },
