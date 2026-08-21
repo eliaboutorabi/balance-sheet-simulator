@@ -114,9 +114,9 @@ p {
 
 h1 {
   color: #111815;
-  font-size: clamp(2.4rem, 6vw, 5.9rem);
+  font-size: clamp(2.3rem, 4.8vw, 4.75rem);
   letter-spacing: 0;
-  line-height: 0.95;
+  line-height: 1;
   max-width: 840px;
 }
 
@@ -1335,7 +1335,7 @@ h1 {
   }
 
   h1 {
-    font-size: clamp(2.15rem, 13vw, 3.35rem);
+    font-size: clamp(2rem, 10vw, 2.8rem);
   }
 
   .hero-copy p {
